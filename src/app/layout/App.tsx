@@ -2,14 +2,19 @@ import { useState } from "react";
 import reactLogo from "../../assets/react.svg";
 import viteLogo from "../../../public/vite.svg";
 import "./style.css";
+import { Button, Container } from "semantic-ui-react";
+import EventDashboard from "../../features/events/dashboard/EventDashboard";
+import NavBar from "./nav/NavBar";
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [formOpen, setFormOpen] = useState(false);
 
   return (
     <>
-      <h1>Welcome to Revenantly</h1>
-      <p className="italic">a new way of meeting new people</p>
+      <NavBar setFormOpen={setFormOpen} />
+      <Container className="main">
+        <EventDashboard formOpen={formOpen} setFormOpen={setFormOpen} />
+      </Container>
     </>
   );
 }
