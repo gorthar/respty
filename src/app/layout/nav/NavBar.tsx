@@ -1,19 +1,17 @@
 import { useState } from "react";
 import { Button, Container, Menu } from "semantic-ui-react";
+import { AppEvent } from "../../types/events";
 
 type Props = {
-  setFormOpen: (value: boolean) => void;
+  viewEvent: (event: AppEvent | null) => void;
 };
 
-export default function NavBar({ setFormOpen }: Props) {
-  function handleFormOpen() {
-    setFormOpen(true);
-  }
+export default function NavBar({ viewEvent }: Props) {
   return (
     <Menu inverted={true} fixed="top">
       <Container>
         <Menu.Item header>
-          <img src="/logo.png" alt="logo" style={{ marginRight: "10px" }} />
+          <img src="/logo.png" alt="logo" style={{ marginRight: "20px" }} />
           Re-vents
         </Menu.Item>
         <Menu.Item name="Events" />
@@ -24,7 +22,7 @@ export default function NavBar({ setFormOpen }: Props) {
             content="Create event"
             color="green"
             positive
-            onClick={handleFormOpen}
+            onClick={() => viewEvent(null)}
           ></Button>
         </Menu.Item>
         <Menu.Item position="right">
