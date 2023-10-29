@@ -1,31 +1,21 @@
-import { useState } from "react";
-import reactLogo from "../../assets/react.svg";
-import viteLogo from "../../../public/vite.svg";
 import "./style.css";
-import { Button, Container } from "semantic-ui-react";
-import EventDashboard from "../../features/events/dashboard/EventDashboard";
+import { Container } from "semantic-ui-react";
+
 import NavBar from "./nav/NavBar";
-import { AppEvent } from "../types/events";
+
+import { Outlet, useLocation } from "react-router-dom";
+import HomePage from "../../features/home/HomePage";
 
 function App() {
-  const [formOpen, setFormOpen] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState<AppEvent | null>(null);
-
-  function viewEvent(event: AppEvent | null) {
-    setSelectedEvent(event);
-    setFormOpen(true);
+  const location = useLocation();
+  if (location.pathname === "/") {
+    return <HomePage />;
   }
-
   return (
     <>
-      <NavBar viewEvent={viewEvent} />
+      <NavBar />
       <Container className="main">
-        <EventDashboard
-          formOpen={formOpen}
-          setFormOpen={setFormOpen}
-          selectedEvent={selectedEvent}
-          viewEvent={viewEvent}
-        />
+        <Outlet />
       </Container>
     </>
   );

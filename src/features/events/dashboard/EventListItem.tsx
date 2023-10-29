@@ -9,13 +9,13 @@ import {
 } from "semantic-ui-react";
 import EventListAttendee from "./EventListAttendee";
 import { AppEvent } from "../../../app/types/events";
+import { Link } from "react-router-dom";
 
 type Props = {
   event: AppEvent;
-  viewEvent: (event: AppEvent) => void;
 };
 
-export default function EventListItem({ event, viewEvent }: Props) {
+export default function EventListItem({ event }: Props) {
   return (
     <SegmentGroup>
       <Segment>
@@ -52,7 +52,8 @@ export default function EventListItem({ event, viewEvent }: Props) {
           color="teal"
           floated="right"
           content="View"
-          onClick={() => viewEvent(event)}
+          as={Link}
+          to={`/events/${event.id}`}
         />
       </Segment>
     </SegmentGroup>

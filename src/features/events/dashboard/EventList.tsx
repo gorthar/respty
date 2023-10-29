@@ -3,14 +3,13 @@ import EventListItem from "./EventListItem";
 
 type Props = {
   events: AppEvent[];
-  viewEvent: (event: AppEvent) => void;
 };
 
-export default function EventList({ events, viewEvent }: Props) {
+export default function EventList({ events }: Props) {
   return (
     <>
       {events.map((event) => (
-        <EventListItem key={event.id} event={event} viewEvent={viewEvent} />
+        <EventListItem key={event.id} event={event} />
       ))}
     </>
   );

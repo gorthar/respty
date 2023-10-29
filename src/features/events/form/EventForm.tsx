@@ -1,24 +1,10 @@
 import { ChangeEvent, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button, Form, Header, Segment } from "semantic-ui-react";
-import { AppEvent } from "../../../app/types/events";
 
-type Props = {
-  setFormOpen: (value: boolean) => void;
-  handleCreateEvent: (event: AppEvent) => void;
-  selectedEvent: AppEvent | null;
-  handleUpdateEvent: (event: AppEvent) => void;
-  handleDelteEvent: (event: AppEvent) => void;
-};
-
-export default function EventForm({
-  setFormOpen,
-  handleCreateEvent,
-  selectedEvent,
-  handleUpdateEvent,
-  handleDelteEvent,
-}: Props) {
-  const isUpdate = selectedEvent !== null;
-  const initialValues = selectedEvent ?? {
+export default function EventForm() {
+  // const isUpdate = selectedEvent !== null;
+  const initialValues = {
     title: "",
     category: "",
     description: "",
@@ -36,24 +22,26 @@ export default function EventForm({
     const { name, value } = e.target;
     setValues({ ...values, [name]: value });
   }
+  const navigate = useNavigate();
   function onSubmit() {
-    if (isUpdate) {
-      handleUpdateEvent({ ...selectedEvent, ...values });
-      return;
-    }
-    handleCreateEvent({
-      ...values,
-      id: "a",
-      hostedBy: "Bob",
-      attendees: [],
-      hostPhotoURL: "",
-    });
-    setFormOpen(false);
+    // if (isUpdate) {
+    //   handleUpdateEvent({ ...selectedEvent, ...values });
+    //   return;
+    // }
+    // handleCreateEvent({
+    //   ...values,
+    //   id: "a",
+    //   hostedBy: "Bob",
+    //   attendees: [],
+    //   hostPhotoURL: "",
+    // });
+    // setFormOpen(false);
+    console.log(values);
   }
 
   return (
     <Segment clearing>
-      <Header content={isUpdate ? "Update event" : "Create new event"} />
+      <Header content={"Create new event"} />
       <Form onSubmit={onSubmit}>
         <Form.Field>
           <input
@@ -109,26 +97,13 @@ export default function EventForm({
             onChange={handleInputChange}
           />
         </Form.Field>
-        <Button
-          type="submit"
-          floated="right"
-          positive
-          content={isUpdate ? "Update" : "Submit"}
-        />
-        {isUpdate && (
-          <Button
-            type="button"
-            floated="right"
-            content="Delete"
-            color="red"
-            onClick={() => handleDelteEvent(values)}
-          />
-        )}
+        <Button type="submit" floated="right" positive content={"Submit"} />
+
         <Button
           type="button"
           floated="right"
           content="Cancel"
-          onClick={() => setFormOpen(false)}
+          onClick={() => navigate(-1)}
         />
       </Form>
     </Segment>
