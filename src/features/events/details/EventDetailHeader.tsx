@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
 import { Segment, Item, Header, Button, Image } from "semantic-ui-react";
+import { AppEvent } from "../../../app/types/events";
 
-export default function EventDetailHeader() {
+type Props = { event: AppEvent };
+
+export default function EventDetailHeader({ event }: Props) {
   const eventImageStyle = {
     filter: "brightness(30%)",
   };
@@ -19,7 +22,7 @@ export default function EventDetailHeader() {
     <Segment.Group>
       <Segment basic attached="top" style={{ padding: "0" }}>
         <Image
-          src={`/categoryImages/drinks.jpg`}
+          src={`/categoryImages/${event.category}.jpg`}
           fluid
           style={eventImageStyle}
         />
@@ -30,12 +33,12 @@ export default function EventDetailHeader() {
               <Item.Content>
                 <Header
                   size="huge"
-                  content="Event Title"
+                  content={event.title}
                   style={{ color: "white" }}
                 />
-                <p>Event Date</p>
+                <p>{event.date}</p>
                 <p>
-                  Hosted by <strong>Bob</strong>
+                  Hosted by <strong>{event.hostedBy}</strong>
                 </p>
               </Item.Content>
             </Item>
@@ -45,7 +48,7 @@ export default function EventDetailHeader() {
 
       <Segment attached="bottom">
         <Button style={{ fontSize: "0.9rem" }}>Cancel My Place</Button>
-        <Button color="teal" style={{ fontSize: "0.9rem" }}>
+        <Button color="purple" style={{ fontSize: "0.9rem" }}>
           JOIN THIS EVENT
         </Button>
 
@@ -54,7 +57,7 @@ export default function EventDetailHeader() {
           floated="right"
           style={{ fontSize: "0.9rem" }}
           as={Link}
-          to={"/createEvent"}
+          to={`/manage/${event.id}`}
         >
           Manage Event
         </Button>

@@ -1,6 +1,26 @@
 import { Segment, Item } from "semantic-ui-react";
+import { AppEvent } from "../../../app/types/events";
 
-export default function EventDetailSideBar() {
+type Props = {
+  event: AppEvent;
+};
+
+export default function EventDetailSideBar({ event }: Props) {
+  if (!event.attendees) {
+    return (
+      <Segment
+        textAlign="center"
+        style={{ border: "none" }}
+        attached="top"
+        secondary
+        inverted
+        color="purple"
+      >
+        Be the first to attend this event!
+      </Segment>
+    );
+  }
+
   return (
     <>
       <Segment
@@ -9,28 +29,23 @@ export default function EventDetailSideBar() {
         attached="top"
         secondary
         inverted
-        color="teal"
+        color="purple"
       >
-        2 People Going
+        {event.attendees.length}
+        {event.attendees.length === 1 ? " Person" : " People"} Going
       </Segment>
       <Segment attached>
         <Item.Group relaxed divided>
-          <Item style={{ position: "relative" }}>
-            <Item.Image size="tiny" src="/user.png" />
-            <Item.Content verticalAlign="middle">
-              <Item.Header as="h3">
-                <span>Tom</span>
-              </Item.Header>
-            </Item.Content>
-          </Item>
-          <Item style={{ position: "relative" }}>
-            <Item.Image size="tiny" src="/user.png" />
-            <Item.Content verticalAlign="middle">
-              <Item.Header as="h3">
-                <span>Bob</span>
-              </Item.Header>
-            </Item.Content>
-          </Item>
+          {event.attendees.map((attendee) => (
+            <Item style={{ position: "relative" }} key={attendee.id}>
+              <Item.Image size="tiny" src={attendee.photoURL || "/user.png"} />
+              <Item.Content verticalAlign="middle">
+                <Item.Header as="h3">
+                  <span>{attendee.name}</span>
+                </Item.Header>
+              </Item.Content>
+            </Item>
+          ))}
         </Item.Group>
       </Segment>
     </>

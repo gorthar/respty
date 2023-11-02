@@ -1,10 +1,28 @@
 import { ChangeEvent, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button, Form, Header, Segment } from "semantic-ui-react";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  Button,
+  Dropdown,
+  DropdownProps,
+  Form,
+  Header,
+  Segment,
+} from "semantic-ui-react";
+import { useAppDispatch, useAppSelector } from "../../../app/store/store";
+import { AppEvent } from "../../../app/types/events";
+import { addEvent, updateEvent } from "../../../app/store/eventSlice";
 
 export default function EventForm() {
-  // const isUpdate = selectedEvent !== null;
-  const initialValues = {
+  const eventId = useParams().id;
+  const isUpdate = eventId !== undefined;
+  console.log(eventId);
+  console.log(isUpdate);
+  const event = useAppSelector((state) =>
+    state.eventsConfig.events.find((e) => e.id === eventId)
+  );
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const initialValues = event ?? {
     title: "",
     category: "",
     description: "",
@@ -16,32 +34,79 @@ export default function EventForm() {
     attendees: [],
     hostPhotoURL: "",
   };
+
+  const categiries = [
+    {
+      key: "drinks",
+      text: "Drinks",
+      value: "drinks",
+    },
+    {
+      key: "culture",
+      text: "Culture",
+      value: "culture",
+    },
+    {
+      key: "film",
+      text: "Film",
+      value: "film",
+    },
+    {
+      key: "food",
+      text: "Food",
+      value: "food",
+    },
+    {
+      key: "music",
+      text: "Music",
+      value: "music",
+    },
+    {
+      key: "travel",
+      text: "Travel",
+      value: "travel",
+    },
+  ];
+
   const [values, setValues] = useState(initialValues);
 
   function handleInputChange(e: ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
     setValues({ ...values, [name]: value });
   }
-  const navigate = useNavigate();
+
+  const handleDropdownChange = (
+    e: React.SyntheticEvent<HTMLElement, Event>,
+    data: DropdownProps
+  ) => {
+    const { name, value } = data;
+    setValues({ ...values, [name]: value });
+  };
+
   function onSubmit() {
-    // if (isUpdate) {
-    //   handleUpdateEvent({ ...selectedEvent, ...values });
-    //   return;
-    // }
-    // handleCreateEvent({
-    //   ...values,
-    //   id: "a",
-    //   hostedBy: "Bob",
-    //   attendees: [],
-    //   hostPhotoURL: "",
-    // });
+    if (isUpdate) {
+      dispatch(updateEvent(values));
+      navigate(-1);
+      return;
+    }
+    handleCreateEvent({
+      ...values,
+      id: Math.random().toString(),
+      hostedBy: "Jim",
+      attendees: [],
+      hostPhotoURL: "/user.png",
+    });
     // setFormOpen(false);
     console.log(values);
+  }
+  function handleCreateEvent(event: AppEvent) {
+    dispatch(addEvent(event));
+    navigate(`/events/${event.id}`);
   }
 
   return (
     <Segment clearing>
-      <Header content={"Create new event"} />
+      <Header content={isUpdate ? "Update event" : "Create new event"} />
       <Form onSubmit={onSubmit}>
         <Form.Field>
           <input
@@ -53,13 +118,21 @@ export default function EventForm() {
           />
         </Form.Field>
         <Form.Field>
-          <input
+          <Dropdown
+            placeholder="Category"
+            selection
+            options={categiries}
+            value={values.category}
+            name="category"
+            onChange={(props, data) => handleDropdownChange(props, data)}
+          />
+          {/* <input
             type="text"
             placeholder="Category"
             name="category"
             value={values.category}
             onChange={handleInputChange}
-          />
+          /> */}
         </Form.Field>
         <Form.Field>
           <input
@@ -76,7 +149,7 @@ export default function EventForm() {
             placeholder="City"
             name="city"
             value={values.city}
-            onChange={handleInputChange}
+            onChange={(e) => handleInputChange(e)}
           />
         </Form.Field>
         <Form.Field>
@@ -97,7 +170,12 @@ export default function EventForm() {
             onChange={handleInputChange}
           />
         </Form.Field>
-        <Button type="submit" floated="right" positive content={"Submit"} />
+        <Button
+          type="submit"
+          floated="right"
+          positive
+          content={isUpdate ? "Update" : "Submit"}
+        />
 
         <Button
           type="button"
