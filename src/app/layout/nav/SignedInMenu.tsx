@@ -1,16 +1,23 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Menu, Image, Dropdown } from "semantic-ui-react";
+import { useDispatch } from "react-redux";
+import { logout } from "../../../features/auth/authSlice";
+import { useAppSelector } from "../../store/store";
 
-type Props = {
-  setIsLoggedIn: (isLoggedIn: boolean) => void;
-};
+export default function SignedInMenu() {
+  const { currentUser } = useAppSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  function handleSignOut() {
+    dispatch(logout());
+    navigate("/");
+  }
 
-export default function SignedInMenu({ setIsLoggedIn }: Props) {
   return (
     <>
       <Menu.Item position="right">
-        <Image avatar spaced="right" src="/user.png" />
-        <Dropdown pointing="top left" text="Bob">
+        <Image avatar spaced="right" src={currentUser?.photoURL} />
+        <Dropdown pointing="top left" text={currentUser?.name}>
           <Dropdown.Menu>
             <Dropdown.Item
               as={Link}
@@ -22,7 +29,7 @@ export default function SignedInMenu({ setIsLoggedIn }: Props) {
             <Dropdown.Item
               text="Sign out"
               icon="power"
-              onClick={() => setIsLoggedIn(false)}
+              onClick={() => handleSignOut()}
             />
           </Dropdown.Menu>
         </Dropdown>

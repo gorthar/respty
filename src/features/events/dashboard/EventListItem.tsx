@@ -12,34 +12,14 @@ import EventListAttendee from "./EventListAttendee";
 import { AppEvent } from "../../../app/types/events";
 import { Link } from "react-router-dom";
 import { useAppDispatch } from "../../../app/store/store";
-import { deleteEvent } from "../../../app/store/eventSlice";
-import React from "react";
+import { openModal } from "../../../app/joint_graund/modals/modalSlice";
 
 type Props = {
   event: AppEvent;
 };
-function exampleReducer(state: any, action: any) {
-  switch (action.type) {
-    case "OPEN_MODAL":
-      return { open: true, dimmer: action.dimmer };
-    case "CLOSE_MODAL":
-      return { open: false };
-    default:
-      throw new Error();
-  }
-}
-export default function EventListItem({ event }: Props) {
-  const dispatcher = useAppDispatch();
-  function handleDeleteEvent(eventId: string) {
-    dispatcher(deleteEvent(eventId));
-    dispatch({ type: "CLOSE_MODAL" });
-  }
-  const [state, dispatch] = React.useReducer(exampleReducer, {
-    open: false,
-    dimmer: undefined,
-  });
-  const { open, dimmer } = state;
 
+export default function EventListItem({ event }: Props) {
+  const dispatch = useAppDispatch();
   return (
     <>
       <SegmentGroup>
@@ -70,6 +50,9 @@ export default function EventListItem({ event }: Props) {
               <EventListAttendee key={attendee.id} attendee={attendee} />
             ))}
           </List>
+          {event.attendees.length == 0
+            ? "Be the first one to attend this event!"
+            : ""}
         </Segment>
         <Segment clearing>
           <span>{event.description}</span>
@@ -81,7 +64,9 @@ export default function EventListItem({ event }: Props) {
               style={{ backgroundColor: "#1f4ed3", color: "white" }}
               content="Delete event"
               onClick={() =>
-                dispatch({ type: "OPEN_MODAL", dimmer: "blurring" })
+                dispatch(
+                  openModal({ modalType: "DeleteEventModal", data: event })
+                )
               }
             />
 
@@ -94,26 +79,6 @@ export default function EventListItem({ event }: Props) {
           </div>
         </Segment>
       </SegmentGroup>
-
-      <Modal
-        dimmer={dimmer}
-        open={open}
-        onClose={() => dispatch({ type: "CLOSE_MODAL" })}
-      >
-        <Modal.Header>Coution, this event will be deleted!</Modal.Header>
-        <Modal.Content>
-          By clicking delete you will delete this event permanently. Are you
-          sure to delete this event?
-        </Modal.Content>
-        <Modal.Actions>
-          <Button onClick={() => dispatch({ type: "CLOSE_MODAL" })}>
-            Cancel
-          </Button>
-          <Button negative onClick={() => handleDeleteEvent(event.id)}>
-            Delete
-          </Button>
-        </Modal.Actions>
-      </Modal>
     </>
   );
 }

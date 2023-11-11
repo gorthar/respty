@@ -1,11 +1,11 @@
-import { useState } from "react";
 import { Button, Container, Menu } from "semantic-ui-react";
 import { NavLink } from "react-router-dom";
 import SignedOutBotton from "./SignedOutBotton";
 import SignedInMenu from "./SignedInMenu";
+import { useAppSelector } from "../../store/store";
 
 export default function NavBar() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { authanticated } = useAppSelector((state) => state.auth);
 
   return (
     <Menu inverted={true} fixed="top">
@@ -25,11 +25,7 @@ export default function NavBar() {
             color="purple"
           ></Button>
         </Menu.Item>
-        {isLoggedIn ? (
-          <SignedInMenu setIsLoggedIn={setIsLoggedIn} />
-        ) : (
-          <SignedOutBotton setIsLoggedIn={setIsLoggedIn} />
-        )}
+        {authanticated ? <SignedInMenu /> : <SignedOutBotton />}
       </Container>
     </Menu>
   );

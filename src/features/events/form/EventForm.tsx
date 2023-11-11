@@ -1,30 +1,23 @@
-import { ChangeEvent, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  Button,
-  Dropdown,
-  DropdownProps,
-  Form,
-  Header,
-  Segment,
-} from "semantic-ui-react";
+import { Button, Form, Header, Segment } from "semantic-ui-react";
 import { useAppDispatch, useAppSelector } from "../../../app/store/store";
 import { AppEvent } from "../../../app/types/events";
 import { addEvent, updateEvent } from "../../../app/store/eventSlice";
+import { categories } from "./categories";
+import { Controller, FieldValues, useForm } from "react-hook-form";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 export default function EventForm() {
-  const eventId = useParams().id;
+  const { register, handleSubmit, control, setValue } = useForm();
+  let eventId = useParams().id;
   const isUpdate = eventId !== undefined;
-  console.log(eventId);
-  console.log(isUpdate);
   const event = useAppSelector((state) =>
     state.eventsConfig.events.find((e) => e.id === eventId)
   );
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const initialValues = event ?? {
+  const emptyValues = {
     title: "",
-    category: "",
+    category: categories[0].value,
     description: "",
     city: "",
     venue: "",
@@ -35,141 +28,108 @@ export default function EventForm() {
     hostPhotoURL: "",
   };
 
-  const categiries = [
-    {
-      key: "drinks",
-      text: "Drinks",
-      value: "drinks",
-    },
-    {
-      key: "culture",
-      text: "Culture",
-      value: "culture",
-    },
-    {
-      key: "film",
-      text: "Film",
-      value: "film",
-    },
-    {
-      key: "food",
-      text: "Food",
-      value: "food",
-    },
-    {
-      key: "music",
-      text: "Music",
-      value: "music",
-    },
-    {
-      key: "travel",
-      text: "Travel",
-      value: "travel",
-    },
-  ];
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const initialValues = event ?? emptyValues;
 
-  const [values, setValues] = useState(initialValues);
-
-  function handleInputChange(e: ChangeEvent<HTMLInputElement>) {
-    const { name, value } = e.target;
-    setValues({ ...values, [name]: value });
-  }
-
-  const handleDropdownChange = (
-    e: React.SyntheticEvent<HTMLElement, Event>,
-    data: DropdownProps
-  ) => {
-    const { name, value } = data;
-    setValues({ ...values, [name]: value });
-  };
-
-  function onSubmit() {
+  function onSubmit(data: FieldValues) {
     if (isUpdate) {
-      dispatch(updateEvent(values));
-      navigate(-1);
+      handleUpdateEvent(
+        Object.assign({}, initialValues, data, {
+          date: data.date.toString(),
+        })
+      );
       return;
     }
-    handleCreateEvent({
-      ...values,
-      id: Math.random().toString(),
-      hostedBy: "Jim",
-      attendees: [],
-      hostPhotoURL: "/user.png",
-    });
-    // setFormOpen(false);
-    console.log(values);
+    handleCreateEvent(
+      Object.assign(initialValues, data, {
+        id: Date.now().toString(),
+        date: data.date.toISOString(),
+      })
+    );
+    console.log(data);
   }
   function handleCreateEvent(event: AppEvent) {
     dispatch(addEvent(event));
     navigate(`/events/${event.id}`);
   }
 
+  function handleUpdateEvent(event: AppEvent) {
+    dispatch(updateEvent(event));
+    navigate("/events/" + eventId);
+  }
+
   return (
     <Segment clearing>
       <Header content={isUpdate ? "Update event" : "Create new event"} />
-      <Form onSubmit={onSubmit}>
+      <Form onSubmit={handleSubmit(onSubmit)}>
+        <Form.Input
+          placeholder="Event title"
+          defaultValue={event?.title || ""}
+          {...register("title")}
+        />
+
+        <Controller
+          name="category"
+          control={control} // control prop from useForm()
+          defaultValue={event?.category || categories[0].value}
+          rules={{ required: true }}
+          render={({ field: { onChange, value, name } }) => (
+            <Form.Dropdown
+              name={name}
+              placeholder="Category"
+              selection
+              value={value}
+              options={categories}
+              onChange={(_, data) => onChange(data.value)}
+            />
+          )}
+        />
+
+        <Form.TextArea
+          placeholder="Description"
+          defaultValue={event?.description || ""}
+          {...register("description", { required: true })}
+        />
+
+        <Form.Input
+          placeholder="City"
+          defaultValue={event?.city || ""}
+          {...register("city", { required: true })}
+        />
+        <Form.Input
+          placeholder="Venue"
+          defaultValue={event?.venue || ""}
+          {...register("venue", { required: true })}
+        />
         <Form.Field>
-          <input
-            type="text"
-            placeholder="Event title"
-            value={values.title}
-            name="title"
-            onChange={(e) => handleInputChange(e)}
-          />
-        </Form.Field>
-        <Form.Field>
-          <Dropdown
-            placeholder="Category"
-            selection
-            options={categiries}
-            value={values.category}
-            name="category"
-            onChange={(props, data) => handleDropdownChange(props, data)}
-          />
-          {/* <input
-            type="text"
-            placeholder="Category"
-            name="category"
-            value={values.category}
-            onChange={handleInputChange}
-          /> */}
-        </Form.Field>
-        <Form.Field>
-          <input
-            type="text"
-            placeholder="Description"
-            name="description"
-            value={values.description}
-            onChange={handleInputChange}
-          />
-        </Form.Field>
-        <Form.Field>
-          <input
-            type="text"
-            placeholder="City"
-            name="city"
-            value={values.city}
-            onChange={(e) => handleInputChange(e)}
-          />
-        </Form.Field>
-        <Form.Field>
-          <input
-            type="text"
-            placeholder="Venue"
-            name="venue"
-            value={values.venue}
-            onChange={handleInputChange}
-          />
-        </Form.Field>
-        <Form.Field>
-          <input
-            type="date"
-            placeholder="Date"
+          <Controller
             name="date"
-            value={values.date}
-            onChange={handleInputChange}
+            control={control}
+            defaultValue={event && new Date(event.date)}
+            rules={{ required: "Date is required" }}
+            render={({ field }) => (
+              <DatePicker
+                selected={field.value}
+                onChange={(value) =>
+                  setValue("date", value, { shouldValidate: true })
+                }
+                placeholderText="Date"
+                showTimeSelect
+                timeCaption="time"
+                timeIntervals={15}
+                dateFormat="MMMM d, yyyy h:mm aa"
+              />
+            )}
           />
         </Form.Field>
+        {/* <Form.Input
+          type="date"
+          placeholder="Date"
+          defaultValue={event?.date || ""}
+          {...register("date", { required: true })}
+        /> */}
+
         <Button
           type="submit"
           floated="right"
@@ -181,7 +141,9 @@ export default function EventForm() {
           type="button"
           floated="right"
           content="Cancel"
-          onClick={() => navigate(-1)}
+          onClick={() =>
+            isUpdate ? navigate("/events/" + eventId) : navigate("/events")
+          }
         />
       </Form>
     </Segment>

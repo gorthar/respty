@@ -1,10 +1,9 @@
 import { Button, Menu } from "semantic-ui-react";
+import { useAppDispatch } from "../../store/store";
+import { openModal } from "../../joint_graund/modals/modalSlice";
 
-type Props = {
-  setIsLoggedIn: (isLoggedIn: boolean) => void;
-};
-
-export default function SignedOutBotton({ setIsLoggedIn }: Props) {
+export default function SignedOutBotton() {
+  const dispatch = useAppDispatch();
   return (
     <Menu.Item position="right">
       <Button
@@ -12,7 +11,9 @@ export default function SignedOutBotton({ setIsLoggedIn }: Props) {
         inverted
         content="Login"
         style={{ marginRight: "5px" }}
-        onClick={() => setIsLoggedIn(true)}
+        onClick={() =>
+          dispatch(openModal({ modalType: "LoginForm", size: "mini" }))
+        }
       />
       <Button basic inverted content="Register" />
     </Menu.Item>
