@@ -48,7 +48,7 @@ export default function Scratch() {
         color="teal"
       />
       <Button
-        onClick={(e) => handleDecrementSubmit()}
+        onClick={() => handleDecrementSubmit()}
         content="Decreese"
         color="facebook"
       />

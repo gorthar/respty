@@ -3,9 +3,18 @@ import { NavLink } from "react-router-dom";
 import SignedOutBotton from "./SignedOutBotton";
 import SignedInMenu from "./SignedInMenu";
 import { useAppSelector } from "../../store/store";
+import { sampleData } from "../api/sampleData";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../../config/firebase";
 
 export default function NavBar() {
   const { authanticated } = useAppSelector((state) => state.auth);
+  function seedDatabase() {
+    sampleData.forEach(async (event) => {
+      const { id, ...eventWithoutId } = event;
+      await setDoc(doc(db, "events", id), { ...eventWithoutId });
+    });
+  }
 
   return (
     <Menu inverted={true} fixed="top">
@@ -25,6 +34,17 @@ export default function NavBar() {
             color="purple"
           ></Button>
         </Menu.Item>
+        {import.meta.env.DEV && (
+          <Menu.Item>
+            <Button
+              onClick={seedDatabase}
+              floated="right"
+              content="Seed database"
+              color="green"
+            ></Button>
+          </Menu.Item>
+        )}
+
         {authanticated ? <SignedInMenu /> : <SignedOutBotton />}
       </Container>
     </Menu>

@@ -10,7 +10,7 @@ type Props = {
   children: React.ReactNode;
 } & ModalProps;
 
-function ModalWrapper({ header, children, size, dimmer, ...props }: Props) {
+function ModalWrapper({ header, children, size, dimmer }: Props) {
   const { open } = useAppSelector((state) => state.modals);
   const dispatch = useAppDispatch();
   return (

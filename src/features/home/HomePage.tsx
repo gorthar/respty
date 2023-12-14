@@ -11,7 +11,7 @@ import {
 export default function HomePage() {
   return (
     <Segment inverted textAlign="center" vertical className="masthead">
-      <Container>
+      <Container text>
         <Header as="h1" inverted>
           <Image size="massive" src="/logo.png" style={{ marginBottom: 12 }} />
         </Header>

@@ -1,6 +1,7 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { AppEvent } from "../types/events";
-import { sampleData } from "../layout/api/sampleData";
+import { Timestamp } from "firebase/firestore";
+
 
 // type Event={
 //     id : string;
@@ -24,13 +25,28 @@ type State={
     events: AppEvent[]
 }
 
-const initialState: State = {events : sampleData}
+const initialState: State = {events : []}
 
 
 export const eventSlice = createSlice({
     name: 'event',
     initialState,
     reducers:{
+        setEvents:{
+            reducer:(state, action: PayloadAction<AppEvent[]>) => {
+                state.events = action.payload
+            },
+            prepare: (events:any) => {
+                let eventsArray: AppEvent[] = []
+                Array.isArray(events) ? eventsArray = events : eventsArray.push(events)
+                const mapedEvents = eventsArray.map((e: any) => {
+                    return {...e, date: (e.date as Timestamp).toDate().toISOString()}
+
+                })
+                return {payload: mapedEvents}
+            }
+
+        }, 
         addEvent: (state, action) => {
             state.events.push(action.payload)
         },
@@ -46,4 +62,4 @@ export const eventSlice = createSlice({
         }
     }
 })
-export const { addEvent, updateEvent, deleteEvent } = eventSlice.actions
+export const { addEvent, updateEvent, deleteEvent, setEvents } = eventSlice.actions
