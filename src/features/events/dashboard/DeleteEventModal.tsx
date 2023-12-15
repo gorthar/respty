@@ -4,15 +4,31 @@ import ModalWrapper from "../../../app/joint_graund/modals/ModalWrapper";
 import { AppEvent } from "../../../app/types/events";
 import { deleteEvent } from "../../../app/store/eventSlice";
 import { closeModal } from "../../../app/joint_graund/modals/modalSlice";
+import { deleteDoc, doc } from "firebase/firestore";
+import { db } from "../../../app/config/firebase";
+import { toast } from "react-toastify";
+import { useState } from "react";
 
 export default function DeleteModal() {
   const { data } = useAppSelector((state) => state.modals);
+  const [loading, setLoading] = useState(false)
   const dispatch = useAppDispatch();
 
-  function handleDeleteEvent(event: AppEvent) {
+   async function handleDeleteEvent(event: AppEvent) {
+    setLoading(true);
     console.log("delete event");
-    dispatch(deleteEvent(event.id));
-    dispatch(closeModal());
+    try {
+      await deleteDoc(doc(db, "events", event.id));
+      dispatch(closeModal());
+    } catch (error : any) {
+      console.log(error.message)
+      toast.error("Something has gone wrong wit deleting the event")
+    }
+    finally{
+      setLoading(false)
+    }
+    
+    
   }
   return (
     <ModalWrapper header={"Coution, this event will be deleted!"} size="tiny">
@@ -33,7 +49,7 @@ export default function DeleteModal() {
         style={{ justifyContent: "space-between", marginTop: "10px" }}
       >
         <Button onClick={() => dispatch(closeModal())}>Cancel</Button>
-        <Button negative onClick={() => handleDeleteEvent(data)}>
+        <Button loading={loading} negative onClick={() => handleDeleteEvent(data)}>
           Delete
         </Button>
       </div>
