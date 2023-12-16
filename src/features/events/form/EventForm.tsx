@@ -21,7 +21,7 @@ export default function EventForm() {
   const eventId = useParams().id;
   const isUpdate = eventId !== undefined;
   const event = useAppSelector((state) =>
-    state.eventsConfig.events.find((e) => e.id === eventId)
+    state.eventsConfig.data.find((e) => e.id === eventId)
   );
 
   const navigate = useNavigate();

@@ -8,7 +8,7 @@ import { useParams } from "react-router-dom";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
 import { useEffect, useState } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
-import { setEvents } from "../../../app/store/eventSlice";
+import { actions } from "../../../app/store/eventSlice";
 import { toast } from "react-toastify";
 import { db } from "../../../app/config/firebase";
 
@@ -17,14 +17,14 @@ export default function EventDetailPage() {
   const [loading, setLoading] = useState(true);
 
   const event = useAppSelector((state) =>
-    state.eventsConfig.events.find((e) => e.id === id)
+    state.eventsConfig.data.find((e) => e.id === id)
   );
   const dispatch = useAppDispatch();
   useEffect(() => {
     if (!id) return;
     const unsubscribe = onSnapshot(doc(db, "events", id), {
       next: (doc) => {
-        dispatch(setEvents({ id: doc.id, ...doc.data() }));
+        dispatch(actions.success({ id: doc.id, ...doc.data() } as any));
         setLoading(false);
       },
       error: (error) => {
