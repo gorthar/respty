@@ -3,6 +3,7 @@ import {
   Icon,
   Item,
   ItemGroup,
+  Label,
   List,
   Segment,
   SegmentGroup,
@@ -25,14 +26,20 @@ export default function EventListItem({ event }: Props) {
         <Segment>
           <ItemGroup>
             <Item>
+            
               <Item.Image
                 size="tiny"
                 circular
                 src={event.hostPhotoURL || "/user.png"}
               />
+              
               <Item.Content>
                 <Item.Header content={event.title} />
                 <Item.Description>Hosted by {event.hostedBy}</Item.Description>
+                {event.isCanceled &&
+                  <Label ribbon='right' color="red" style={{top:'-10px',}}> Canceled</Label>
+                }
+                
               </Item.Content>
             </Item>
           </ItemGroup>

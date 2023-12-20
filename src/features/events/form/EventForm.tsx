@@ -10,6 +10,7 @@ import { useFireStore } from "../../../app/hooks/firestore/useFirestore";
 import { useEffect } from "react";
 import { actions } from "../../../app/store/eventSlice";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
+import { toast } from "react-toastify";
 
 export default function EventForm() {
   const {loadDocument,createDocument,updateDocument} = useFireStore('events')
@@ -46,11 +47,21 @@ export default function EventForm() {
         
       } else {
         const newEventRef = await createDocument(data) 
-        navigate("/events/" + newEventRef.id);
+        navigate("/events/" + newEventRef?.id);
       }
     } catch (error) {
       console.log(error);
     }
+  }
+  function cancelEvent( ){
+    if (event?.isCanceled) {
+      updateDocument({ ...event, isCanceled: false})
+    } else {
+      updateDocument({ ...event, isCanceled: true})
+      
+    }
+    toast.success(`Event status changed to  ${event?.isCanceled?'active':'cancelled'}`)
+    navigate("/events/" + eventId)
   }
   if (status === 'loading') {
     return <LoadingComponent/>
@@ -125,6 +136,14 @@ export default function EventForm() {
           defaultValue={event?.date || ""}
           {...register("date", { required: true })}
         /> */}
+        {isUpdate && <Button
+          type="button"
+          floated="left"
+          color={event?.isCanceled?'green':"red"}
+          content={ event?.isCanceled ? "Reactivate Event" :"Cancel Event"}
+          onClick={cancelEvent}
+        />}
+        
 
         <Button
           type="submit"

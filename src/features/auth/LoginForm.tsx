@@ -4,6 +4,8 @@ import { useAppDispatch } from "../../app/store/store";
 import { closeModal } from "../../app/joint_graund/modals/modalSlice";
 import { Button, Form } from "semantic-ui-react";
 import { login } from "./authSlice";
+import { signInWithEmailAndPassword } from "firebase/auth";
+//import { auth } from "../../app/config/firebase";
 
 export default function LoginForm() {
   const {
@@ -15,9 +17,15 @@ export default function LoginForm() {
   });
   const dispatch = useAppDispatch();
 
-  function onSubmit(data: FieldValues) {
-    dispatch(login(data));
-    dispatch(closeModal());
+  async function onSubmit(data: FieldValues) {
+    // try {
+    //   const result = await signInWithEmailAndPassword(auth,data.email,data.password);
+    //   console.log(result)
+    // } catch (error) {
+      
+    // }
+    // dispatch(login(data));
+    // dispatch(closeModal());
   }
 
   return (

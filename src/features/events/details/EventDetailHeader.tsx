@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Segment, Item, Header, Button, Image } from "semantic-ui-react";
+import { Segment, Item, Header, Button, Image, Label } from "semantic-ui-react";
 import { AppEvent } from "../../../app/types/events";
 
 type Props = { event: AppEvent };
@@ -31,6 +31,7 @@ export default function EventDetailHeader({ event }: Props) {
           <Item.Group>
             <Item>
               <Item.Content>
+              
                 <Header
                   size="huge"
                   content={event.title}
@@ -40,6 +41,9 @@ export default function EventDetailHeader({ event }: Props) {
                 <p>
                   Hosted by <strong>{event.hostedBy}</strong>
                 </p>
+                {event.isCanceled &&
+                  <Label color="red" size="large"> Canceled</Label>
+                }
               </Item.Content>
             </Item>
           </Item.Group>
