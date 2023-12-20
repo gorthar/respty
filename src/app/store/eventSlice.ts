@@ -38,6 +38,7 @@ export const eventSlice = createGenericSlice({
         success:{
             reducer:(state, action: PayloadAction<AppEvent[]>) => {
                 state.data = action.payload
+                state.status = 'finished'
             },
             prepare: (events:any) => {
                 let eventsArray: AppEvent[] = []

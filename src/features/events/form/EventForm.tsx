@@ -1,70 +1,60 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { Button, Form, Header, Segment } from "semantic-ui-react";
 import { useAppSelector } from "../../../app/store/store";
-import { AppEvent } from "../../../app/types/events";
 
 import { categories } from "./categories";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import {
-  Timestamp,
-  collection,
-  doc,
-  setDoc,
-  updateDoc,
-} from "firebase/firestore";
-import { db } from "../../../app/config/firebase";
+import { useFireStore } from "../../../app/hooks/firestore/useFirestore";
+import { useEffect } from "react";
+import { actions } from "../../../app/store/eventSlice";
+import LoadingComponent from "../../../app/layout/LoadingComponent";
 
 export default function EventForm() {
-  const { register, handleSubmit, control, setValue } = useForm();
+  const {loadDocument,createDocument,updateDocument} = useFireStore('events')
+  const { register, handleSubmit, control, setValue, formState:{isSubmitting} } = useForm({
+    mode:"onTouched",
+    defaultValues:async () => {
+      if (event) {
+        return {
+          ...event, date: new Date(event.date)
+        }
+      }
+    }
+  });
   const eventId = useParams().id;
   const isUpdate = eventId !== undefined;
   const event = useAppSelector((state) =>
     state.eventsConfig.data.find((e) => e.id === eventId)
   );
+  const {status} = useAppSelector( state => state.eventsConfig);
 
   const navigate = useNavigate();
 
-  //const initialValues = event ?? emptyValues;
-
-  async function updateEventDb(data: AppEvent) {
-    if (!event) return;
-    const eventRef = doc(db, "events", data.id);
-    console.log(data.id);
-    await updateDoc(eventRef, {
-      ...data,
-      date: Timestamp.fromDate(new Date(data.date)),
-    });
-  }
-
-  async function createEventDb(data: FieldValues) {
-    const newEventRef = doc(collection(db, "events"));
-    await setDoc(newEventRef, {
-      ...data,
-      hostedBy: "Bob",
-      attendees: [],
-      hostPhotoURL: "",
-      date: Timestamp.fromDate(new Date(data.date)),
-    });
-    return newEventRef;
-  }
+  useEffect(()=>{
+    if (!eventId) return;
+    loadDocument(eventId,actions)
+  },[eventId])
+  
 
   async function onSubmit(data: FieldValues) {
     try {
       if (event) {
-        await updateEventDb({ ...event, ...data });
-        navigate("/events/" + eventId);
+        await updateDocument({ ...event, ...data })
+        navigate("/events/"+event.id)
+        
       } else {
-        const newEventRef = await createEventDb(data);
-
+        const newEventRef = await createDocument(data) 
         navigate("/events/" + newEventRef.id);
       }
     } catch (error) {
       console.log(error);
     }
   }
-
+  if (status === 'loading') {
+    return <LoadingComponent/>
+  }
   return (
     <Segment clearing>
       <Header content={isUpdate ? "Update event" : "Create new event"} />
@@ -140,6 +130,7 @@ export default function EventForm() {
           type="submit"
           floated="right"
           positive
+          loading={isSubmitting}
           content={isUpdate ? "Update" : "Submit"}
         />
 
