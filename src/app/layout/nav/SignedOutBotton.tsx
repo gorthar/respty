@@ -15,7 +15,14 @@ export default function SignedOutBotton() {
           dispatch(openModal({ modalType: "LoginForm", size: "mini" }))
         }
       />
-      <Button basic inverted content="Register" />
+      <Button
+        basic
+        inverted
+        content="Register"
+        onClick={() => {
+          dispatch(openModal({ modalType: "RegisterForm", size: "mini" }));
+        }}
+      />
     </Menu.Item>
   );
 }

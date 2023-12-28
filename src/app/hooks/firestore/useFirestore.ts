@@ -20,6 +20,7 @@ type ListnerState = {
 };
 export const useFireStore = <T extends DocumentData>(path: string) => {
   const listenersRef = useRef<ListnerState[]>([]);
+  
   useEffect(() => {
     let listenerRefValue: ListnerState[] | null = null;
     if (listenersRef.current) {
@@ -104,11 +105,7 @@ export const useFireStore = <T extends DocumentData>(path: string) => {
       const newEventRef = doc(collection(db, path));
       await setDoc(newEventRef, {
         ...data,
-        hostedBy: "Bob",
-        attendees: [],
-        hostPhotoURL: "",
-        date: Timestamp.fromDate(new Date(data.date)),
-        isCanceled: false
+        
       });
       return newEventRef ;
     } catch (error: any) {
@@ -118,14 +115,22 @@ export const useFireStore = <T extends DocumentData>(path: string) => {
   };
 
   const deleteDocument =async (id:string) => {
+    
     try {
         await deleteDoc(doc(db, path, id));
-        
       } catch (error : any) {
         console.log(error.message)
-        toast.error("Something has gone wrong wit deleting the event")
+        toast.error("Something has gone wrong with deleting the event")
       }
   }
+  const setDocument = async (id: string, data: any) => {
+    try {
+     return await setDoc(doc(db, path, id), data);
+    } catch (error: any) {
+      console.log(error.message);
+      toast.error(error.message);
+    }
+  }
 
-  return { loadCollection, loadDocument, updateDocument, createDocument,deleteDocument };
+  return { loadCollection, loadDocument, updateDocument, createDocument,deleteDocument,setDocument };
 };

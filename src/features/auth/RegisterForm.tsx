@@ -3,13 +3,16 @@ import ModalWrapper from "../../app/joint_graund/modals/ModalWrapper";
 import { useAppDispatch } from "../../app/store/store";
 import { closeModal } from "../../app/joint_graund/modals/modalSlice";
 import { Button, Form } from "semantic-ui-react";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "../../app/config/firebase";
 import { toast } from "react-toastify";
+import { useFireStore } from "../../app/hooks/firestore/useFirestore";
+import { Timestamp } from "firebase/firestore";
 import SocialLogin from "./SocialLogin";
 //import { auth } from "../../app/config/firebase";
 
-export default function LoginForm() {
+export default function RegisterForm() {
+  const { setDocument } = useFireStore("profiles");
   const {
     register,
     handleSubmit,
@@ -21,7 +24,19 @@ export default function LoginForm() {
 
   async function onSubmit(data: FieldValues) {
     try {
-      await signInWithEmailAndPassword(auth, data.email, data.password);
+      const userCreds = await createUserWithEmailAndPassword(
+        auth,
+        data.email,
+        data.password
+      );
+      await updateProfile(userCreds.user, {
+        displayName: data.displayName,
+      });
+      await setDocument(userCreds.user.uid, {
+        displayName: data.displayName,
+        email: data.email,
+        createdAt: Timestamp.now(),
+      });
       dispatch(closeModal());
     } catch (error: any) {
       console.log(error.message);
@@ -30,8 +45,17 @@ export default function LoginForm() {
   }
 
   return (
-    <ModalWrapper header="Sign In for re-vents" size="mini">
+    <ModalWrapper header="Register to re-vents" size="mini">
       <Form onSubmit={handleSubmit(onSubmit)}>
+        <Form.Input
+          defaultValue=""
+          type="text"
+          placeholder="Name"
+          {...register("displayName", {
+            required: true,
+          })}
+          error={errors.text?.type === "required" && "Name is required"}
+        />
         <Form.Input
           defaultValue=""
           type="email"
@@ -66,8 +90,9 @@ export default function LoginForm() {
           fluid
           size="large"
           color="teal"
-          content="Login"
+          content="Register"
         />
+
         <SocialLogin />
       </Form>
     </ModalWrapper>

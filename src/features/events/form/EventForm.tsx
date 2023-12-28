@@ -11,60 +11,76 @@ import { useEffect } from "react";
 import { actions } from "../../../app/store/eventSlice";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
 import { toast } from "react-toastify";
+import { Timestamp } from "firebase/firestore";
 
 export default function EventForm() {
-  const {loadDocument,createDocument,updateDocument} = useFireStore('events')
-  const { register, handleSubmit, control, setValue, formState:{isSubmitting} } = useForm({
-    mode:"onTouched",
-    defaultValues:async () => {
+  const { loadDocument, createDocument, updateDocument } =
+    useFireStore("events");
+  const {
+    register,
+    handleSubmit,
+    control,
+    setValue,
+    formState: { isSubmitting },
+  } = useForm({
+    mode: "onTouched",
+    defaultValues: async () => {
       if (event) {
         return {
-          ...event, date: new Date(event.date)
-        }
+          ...event,
+          date: new Date(event.date),
+        };
       }
-    }
+    },
   });
   const eventId = useParams().id;
+  const { currentUser } = useAppSelector((state) => state.auth);
   const isUpdate = eventId !== undefined;
   const event = useAppSelector((state) =>
     state.eventsConfig.data.find((e) => e.id === eventId)
   );
-  const {status} = useAppSelector( state => state.eventsConfig);
+  const { status } = useAppSelector((state) => state.eventsConfig);
 
   const navigate = useNavigate();
 
-  useEffect(()=>{
+  useEffect(() => {
     if (!eventId) return;
-    loadDocument(eventId,actions)
-  },[eventId])
-  
+    loadDocument(eventId, actions);
+  }, [eventId, loadDocument]);
 
   async function onSubmit(data: FieldValues) {
     try {
       if (event) {
-        await updateDocument({ ...event, ...data })
-        navigate("/events/"+event.id)
-        
+        await updateDocument({ ...event, ...data });
+        navigate("/events/" + event.id);
       } else {
-        const newEventRef = await createDocument(data) 
+        const newEventRef = await createDocument({
+          ...data,
+          hostedBy: currentUser?.displayName ?? "Bob",
+          attendees: [],
+          hostPhotoURL: currentUser?.photoURL ?? "/assets/user.png",
+          date: Timestamp.fromDate(new Date(data.date)),
+          isCanceled: false,
+        });
         navigate("/events/" + newEventRef?.id);
       }
     } catch (error) {
       console.log(error);
     }
   }
-  function cancelEvent( ){
+  function cancelEvent() {
     if (event?.isCanceled) {
-      updateDocument({ ...event, isCanceled: false})
+      updateDocument({ ...event, isCanceled: false });
     } else {
-      updateDocument({ ...event, isCanceled: true})
-      
+      updateDocument({ ...event, isCanceled: true });
     }
-    toast.success(`Event status changed to  ${event?.isCanceled?'active':'cancelled'}`)
-    navigate("/events/" + eventId)
+    toast.success(
+      `Event status changed to  ${event?.isCanceled ? "active" : "cancelled"}`
+    );
+    navigate("/events/" + eventId);
   }
-  if (status === 'loading') {
-    return <LoadingComponent/>
+  if (status === "loading") {
+    return <LoadingComponent />;
   }
   return (
     <Segment clearing>
@@ -136,14 +152,15 @@ export default function EventForm() {
           defaultValue={event?.date || ""}
           {...register("date", { required: true })}
         /> */}
-        {isUpdate && <Button
-          type="button"
-          floated="left"
-          color={event?.isCanceled?'green':"red"}
-          content={ event?.isCanceled ? "Reactivate Event" :"Cancel Event"}
-          onClick={cancelEvent}
-        />}
-        
+        {isUpdate && (
+          <Button
+            type="button"
+            floated="left"
+            color={event?.isCanceled ? "green" : "red"}
+            content={event?.isCanceled ? "Reactivate Event" : "Cancel Event"}
+            onClick={cancelEvent}
+          />
+        )}
 
         <Button
           type="submit"

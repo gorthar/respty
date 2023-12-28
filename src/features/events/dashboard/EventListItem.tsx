@@ -1,5 +1,6 @@
 import {
   Button,
+  Grid,
   Icon,
   Item,
   ItemGroup,
@@ -26,28 +27,40 @@ export default function EventListItem({ event }: Props) {
         <Segment>
           <ItemGroup>
             <Item>
-            
-              <Item.Image
-                size="tiny"
-                circular
-                src={event.hostPhotoURL || "/user.png"}
-              />
-              
+              <Item.Image size="tiny" circular src={event.hostPhotoURL} />
+
               <Item.Content>
                 <Item.Header content={event.title} />
                 <Item.Description>Hosted by {event.hostedBy}</Item.Description>
-                {event.isCanceled &&
-                  <Label ribbon='right' color="red" style={{top:'-10px',}}> Canceled</Label>
-                }
-                
+                {event.isCanceled && (
+                  <Label ribbon="right" color="red" style={{ top: "-10px" }}>
+                    {" "}
+                    Canceled
+                  </Label>
+                )}
               </Item.Content>
             </Item>
           </ItemGroup>
         </Segment>
         <Segment>
           <span>
-            <Icon name="clock" /> {event.date}
-            <Icon name="marker" /> {event.venue}
+            <Grid columns={2} stackable textAlign="justified">
+              <Grid.Column>
+                <Icon name="calendar" /> {event.date}
+              </Grid.Column>
+              <Grid.Column>
+                <Icon name="marker" />{" "}
+                <a
+                  href={
+                    "http://maps.google.com/maps?q=" +
+                    event.venue.replace(/ /g, "+")
+                  }
+                  target="_blank"
+                >
+                  {event.venue}
+                </a>
+              </Grid.Column>
+            </Grid>
           </span>
         </Segment>
         <Segment secondary>

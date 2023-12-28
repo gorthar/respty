@@ -1,7 +1,7 @@
-export type user = {
-    id? : string;
-    name? : string;
-    photoURL? : string;
-    password? : string;
-    email? : string;
+export type AppUser = {
+    uid? : string;
+    displayName : string | null;
+    photoURL : string | null;
+    email : string | null |undefined;
+    providerId : string | null;
 }

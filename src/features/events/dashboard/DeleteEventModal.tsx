@@ -10,15 +10,14 @@ import { useFireStore } from "../../../app/hooks/firestore/useFirestore";
 
 export default function DeleteModal() {
   const { data } = useAppSelector((state) => state.modals);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
-  const {deleteDocument}= useFireStore('event')
-   async function handleDeleteEvent(event: AppEvent) {
+  const { deleteDocument } = useFireStore("events");
+  function handleDeleteEvent(event: AppEvent) {
     setLoading(true);
-    console.log("delete event");
-    deleteDocument(event.id)
+    deleteDocument(event.id);
     dispatch(closeModal());
-    setLoading(false)    
+    setLoading(false);
   }
   return (
     <ModalWrapper header={"Coution, this event will be deleted!"} size="tiny">
@@ -39,7 +38,11 @@ export default function DeleteModal() {
         style={{ justifyContent: "space-between", marginTop: "10px" }}
       >
         <Button onClick={() => dispatch(closeModal())}>Cancel</Button>
-        <Button loading={loading} negative onClick={() => handleDeleteEvent(data)}>
+        <Button
+          loading={loading}
+          negative
+          onClick={() => handleDeleteEvent(data)}
+        >
           Delete
         </Button>
       </div>

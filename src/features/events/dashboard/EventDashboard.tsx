@@ -6,15 +6,16 @@ import { useEffect } from "react";
 import { actions } from "../../../app/store/eventSlice";
 import { useFireStore } from "../../../app/hooks/firestore/useFirestore";
 
-
 export default function EventDashboard() {
-  const {data :events ,status} = useAppSelector((state) => state.eventsConfig);
-  const {loadCollection} = useFireStore('events')
+  const { data: events, status } = useAppSelector(
+    (state) => state.eventsConfig
+  );
+  const { loadCollection } = useFireStore("events");
 
   useEffect(() => {
-    loadCollection(actions)
+    loadCollection(actions);
   }, [loadCollection]);
-  console.log(events)
+
   if (status === "loading") return <LoadingComponent />;
 
   return (
