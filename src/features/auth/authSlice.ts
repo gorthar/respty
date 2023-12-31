@@ -39,7 +39,18 @@ export const authSlice = createSlice({
         logout : (state) => {
             state.authanticated = false;
             state.currentUser = null;
+        },
+        updateName : (state,action: PayloadAction<string>) => {
+            if(state.currentUser){
+                state.currentUser.displayName = action.payload
+            }
+        },
+        updatePhotoUrl : (state,action: PayloadAction<string>) => {
+            if(state.currentUser){
+                state.currentUser.photoURL = action.payload
+            }
         }
+
     }
 })
-export const {login,logout} = authSlice.actions;
+export const {login,logout,updateName,updatePhotoUrl} = authSlice.actions;

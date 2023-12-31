@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import { useFireStore } from "../../app/hooks/firestore/useFirestore";
 import { Timestamp } from "firebase/firestore";
 import SocialLogin from "./SocialLogin";
+import { updateName } from "./authSlice";
 //import { auth } from "../../app/config/firebase";
 
 export default function RegisterForm() {
@@ -37,6 +38,7 @@ export default function RegisterForm() {
         email: data.email,
         createdAt: Timestamp.now(),
       });
+      dispatch(updateName(data.displayName));
       dispatch(closeModal());
     } catch (error: any) {
       console.log(error.message);

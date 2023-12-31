@@ -14,6 +14,7 @@ import { AppEvent } from "../../../app/types/events";
 import { Link } from "react-router-dom";
 import { useAppDispatch } from "../../../app/store/store";
 import { openModal } from "../../../app/joint_graund/modals/modalSlice";
+import formatDateString from "../../../app/joint_graund/formatDate";
 
 type Props = {
   event: AppEvent;
@@ -21,6 +22,7 @@ type Props = {
 
 export default function EventListItem({ event }: Props) {
   const dispatch = useAppDispatch();
+
   return (
     <>
       <SegmentGroup>
@@ -46,7 +48,7 @@ export default function EventListItem({ event }: Props) {
           <span>
             <Grid columns={2} stackable textAlign="justified">
               <Grid.Column>
-                <Icon name="calendar" /> {event.date}
+                <Icon name="calendar" /> {formatDateString(event.date)}
               </Grid.Column>
               <Grid.Column>
                 <Icon name="marker" />{" "}

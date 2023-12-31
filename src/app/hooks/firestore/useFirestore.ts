@@ -3,7 +3,6 @@ import { useAppDispatch } from "../../store/store";
 import { GenericActions } from "../../store/genericSlice";
 import {
   DocumentData,
-  Timestamp,
   collection,
   deleteDoc,
   doc,
@@ -69,7 +68,7 @@ export const useFireStore = <T extends DocumentData>(path: string) => {
 
       const listener = onSnapshot(docRef, {
         next: (doc) => {
-          if (!doc.exists) {
+          if (!doc.exists()) {
             dispatch(actions.error("Document does not exist"));
             return;
           }
@@ -86,13 +85,11 @@ export const useFireStore = <T extends DocumentData>(path: string) => {
     [dispatch, path]
   );
 
-  const updateDocument = async (data: T) => {
+  const updateDocument = async (id:string, data: T) => {
     try {
-      const eventRef = doc(db, path, data.id);
-      console.log(data.id);
+      const eventRef = doc(db, path, id);
       await updateDoc(eventRef, {
-        ...data,
-        date: Timestamp.fromDate(new Date(data.date)),
+        ...data
       });
     } catch (error: any) {
       console.log(error.message);

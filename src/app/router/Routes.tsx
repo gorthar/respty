@@ -5,6 +5,7 @@ import EventDetailPage from "../../features/events/details/EventDetailPage";
 import EventForm from "../../features/events/form/EventForm";
 import Scratch from "../scratch/Scratch";
 import AccountPage from "../../features/auth/AccountPage";
+import ProfilePage from "../../features/profiles/ProfilePage";
 
 export const router = createBrowserRouter([
   {
@@ -34,6 +35,10 @@ export const router = createBrowserRouter([
       {
         path: "/account",
         element: <AccountPage />,
+      },
+      {
+        path: "/profiles/:id",
+        element: <ProfilePage />,
       },
     ],
   },

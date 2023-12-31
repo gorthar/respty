@@ -28,6 +28,9 @@ export default function SignedInMenu() {
   function goToAccount() {
     navigate("/account");
   }
+  function goToProfile() {
+    navigate("/profiles/" + currentUser?.uid);
+  }
 
   return (
     <>
@@ -48,6 +51,11 @@ export default function SignedInMenu() {
             <Dropdown.Item
               text="My profile"
               icon="user"
+              onClick={() => goToProfile()}
+            />
+            <Dropdown.Item
+              text="My Account"
+              icon="user secret"
               onClick={() => goToAccount()}
             />
             <Dropdown.Item

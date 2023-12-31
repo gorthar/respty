@@ -17,7 +17,6 @@ export default function SocialLogin() {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
-      console.log(result);
       if (
         result.user.metadata.creationTime ===
         result.user.metadata.lastSignInTime

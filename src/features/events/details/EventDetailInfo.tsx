@@ -1,5 +1,7 @@
 import { Segment, Grid, Icon, Button } from "semantic-ui-react";
 import { AppEvent } from "../../../app/types/events";
+import formatDateString from "../../../app/joint_graund/formatDate";
+import { Link } from "react-router-dom";
 
 type Props = { event: AppEvent };
 
@@ -22,7 +24,7 @@ export default function EventDetailInfo({ event }: Props) {
             <Icon name="calendar" size="large" color="purple" />
           </Grid.Column>
           <Grid.Column width={14}>
-            <span>{event.date}</span>
+            <span>{formatDateString(event.date)}</span>
           </Grid.Column>
         </Grid>
       </Segment>
@@ -36,6 +38,12 @@ export default function EventDetailInfo({ event }: Props) {
           </Grid.Column>
           <Grid.Column width={4}>
             <Button
+              as={Link}
+              to={
+                "http://maps.google.com/maps?q=" +
+                event.venue.replace(/ /g, "+")
+              }
+              target="_blank"
               floated="right"
               color="purple"
               size="tiny"

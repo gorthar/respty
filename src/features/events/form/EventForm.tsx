@@ -35,7 +35,7 @@ export default function EventForm() {
   });
   const eventId = useParams().id;
   const { currentUser } = useAppSelector((state) => state.auth);
-  const isUpdate = eventId !== undefined;
+
   const event = useAppSelector((state) =>
     state.eventsConfig.data.find((e) => e.id === eventId)
   );
@@ -51,7 +51,11 @@ export default function EventForm() {
   async function onSubmit(data: FieldValues) {
     try {
       if (event) {
-        await updateDocument({ ...event, ...data });
+        await updateDocument(event.id, {
+          ...event,
+          ...data,
+          date: Timestamp.fromDate(new Date(data.date)),
+        });
         navigate("/events/" + event.id);
       } else {
         const newEventRef = await createDocument({
@@ -70,9 +74,9 @@ export default function EventForm() {
   }
   function cancelEvent() {
     if (event?.isCanceled) {
-      updateDocument({ ...event, isCanceled: false });
+      updateDocument(event.id, { ...event, isCanceled: false });
     } else {
-      updateDocument({ ...event, isCanceled: true });
+      event && updateDocument(event.id, { ...event, isCanceled: true });
     }
     toast.success(
       `Event status changed to  ${event?.isCanceled ? "active" : "cancelled"}`
@@ -84,7 +88,7 @@ export default function EventForm() {
   }
   return (
     <Segment clearing>
-      <Header content={isUpdate ? "Update event" : "Create new event"} />
+      <Header content={event ? "Update event" : "Create new event"} />
       <Form onSubmit={handleSubmit(onSubmit)}>
         <Form.Input
           placeholder="Event title"
@@ -152,7 +156,7 @@ export default function EventForm() {
           defaultValue={event?.date || ""}
           {...register("date", { required: true })}
         /> */}
-        {isUpdate && (
+        {event && (
           <Button
             type="button"
             floated="left"
@@ -167,7 +171,7 @@ export default function EventForm() {
           floated="right"
           positive
           loading={isSubmitting}
-          content={isUpdate ? "Update" : "Submit"}
+          content={event ? "Update" : "Submit"}
         />
 
         <Button
@@ -175,7 +179,7 @@ export default function EventForm() {
           floated="right"
           content="Cancel"
           onClick={() =>
-            isUpdate ? navigate("/events/" + eventId) : navigate("/events")
+            event ? navigate("/events/" + eventId) : navigate("/events")
           }
         />
       </Form>
