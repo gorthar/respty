@@ -11,7 +11,7 @@ import { useEffect } from "react";
 import { actions } from "../../../app/store/eventSlice";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
 import { toast } from "react-toastify";
-import { Timestamp } from "firebase/firestore";
+import { Timestamp, arrayUnion } from "firebase/firestore";
 
 export default function EventForm() {
   const { loadDocument, createDocument, updateDocument } =
@@ -51,27 +51,42 @@ export default function EventForm() {
   async function onSubmit(data: FieldValues) {
     try {
       if (event) {
-        await updateDocument(event.id, {
-          ...event,
-          ...data,
-          date: Timestamp.fromDate(new Date(data.date)),
-        });
+        updateEvent(data);
         navigate("/events/" + event.id);
       } else {
-        const newEventRef = await createDocument({
-          ...data,
-          hostedBy: currentUser?.displayName ?? "Bob",
-          attendees: [],
-          hostPhotoURL: currentUser?.photoURL ?? "/assets/user.png",
-          date: Timestamp.fromDate(new Date(data.date)),
-          isCanceled: false,
-        });
-        navigate("/events/" + newEventRef?.id);
+        createEvent(data);
       }
     } catch (error) {
       console.log(error);
     }
   }
+
+  async function updateEvent(data: FieldValues) {
+    await updateDocument(event!.id, {
+      ...event,
+      ...data,
+      date: Timestamp.fromDate(new Date(data.date)),
+    });
+  }
+
+  async function createEvent(data: FieldValues) {
+    const newEventRef = await createDocument({
+      ...data,
+      hostedBy: currentUser?.displayName ?? "Bob",
+      hostUid: currentUser?.uid,
+      attendees: arrayUnion({
+        id: currentUser?.uid,
+        displayName: currentUser?.displayName,
+        photoURL: currentUser?.photoURL,
+      }),
+      hostPhotoURL: currentUser?.photoURL ?? "/assets/user.png",
+      attendeesIds: arrayUnion(currentUser?.uid),
+      date: Timestamp.fromDate(new Date(data.date)),
+      isCanceled: false,
+    });
+    navigate("/events/" + newEventRef?.id);
+  }
+
   function cancelEvent() {
     if (event?.isCanceled) {
       updateDocument(event.id, { ...event, isCanceled: false });

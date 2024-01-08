@@ -6,14 +6,16 @@ export type AppEvent = {
     category : string;
     city : string;
     venue : string;
+    hostUid : string;
     hostedBy : string;
     hostPhotoURL : string;
     isCanceled: boolean;
     attendees : Attendee[];
+    attendeesIds : string[];
 }
 
 export type Attendee = {
     id : string;
-    name : string;
+    displayName : string;
     photoURL : string;
 }

@@ -1,30 +1,44 @@
 import { Grid } from "semantic-ui-react";
 import EventList from "./EventList";
-import LoadingComponent from "../../../app/layout/LoadingComponent";
 import { useAppSelector } from "../../../app/store/store";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { actions } from "../../../app/store/eventSlice";
 import { useFireStore } from "../../../app/hooks/firestore/useFirestore";
+import EventFilters from "./EventFilters";
+import { QueryOptions } from "../../../app/hooks/firestore/types";
+import EventListItemPlaceholder from "./EventListItemPlaceholder";
 
 export default function EventDashboard() {
+  const contextRef = useRef(null);
   const { data: events, status } = useAppSelector(
     (state) => state.eventsConfig
   );
   const { loadCollection } = useFireStore("events");
+  const [query, setQuery] = useState<QueryOptions[]>([
+    { attribute: "date", operator: ">=", value: new Date() },
+  ]);
 
   useEffect(() => {
-    loadCollection(actions);
-  }, [loadCollection]);
-
-  if (status === "loading") return <LoadingComponent />;
+    loadCollection(actions, {
+      queries: query,
+    });
+  }, [loadCollection, query]);
 
   return (
     <Grid>
-      <Grid.Column width="10">
-        <EventList events={events} />
+      <Grid.Column width={10} ref={contextRef}>
+        {status === "loading" ? (
+          <>
+            <EventListItemPlaceholder />
+            <EventListItemPlaceholder />
+            <EventListItemPlaceholder />
+          </>
+        ) : (
+          <EventList events={events} />
+        )}
       </Grid.Column>
       <Grid.Column width="6">
-        <h2>Filters</h2>
+        <EventFilters setQuery={setQuery} />
       </Grid.Column>
     </Grid>
   );

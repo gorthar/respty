@@ -12,7 +12,7 @@ import {
 import EventListAttendee from "./EventListAttendee";
 import { AppEvent } from "../../../app/types/events";
 import { Link } from "react-router-dom";
-import { useAppDispatch } from "../../../app/store/store";
+import { useAppDispatch, useAppSelector } from "../../../app/store/store";
 import { openModal } from "../../../app/joint_graund/modals/modalSlice";
 import formatDateString from "../../../app/joint_graund/formatDate";
 
@@ -22,6 +22,7 @@ type Props = {
 
 export default function EventListItem({ event }: Props) {
   const dispatch = useAppDispatch();
+  const { currentUser } = useAppSelector((state) => state.auth);
 
   return (
     <>
@@ -33,7 +34,12 @@ export default function EventListItem({ event }: Props) {
 
               <Item.Content>
                 <Item.Header content={event.title} />
-                <Item.Description>Hosted by {event.hostedBy}</Item.Description>
+                <Item.Description>
+                  Hosted by{" "}
+                  <Link to={`/profiles/${event.hostUid}`}>
+                    {event.hostedBy}
+                  </Link>
+                </Item.Description>
                 {event.isCanceled && (
                   <Label ribbon="right" color="red" style={{ top: "-10px" }}>
                     {" "}
@@ -77,11 +83,11 @@ export default function EventListItem({ event }: Props) {
         </Segment>
         <Segment clearing>
           <span>{event.description}</span>
-          <div
-            className="flex"
-            style={{ justifyContent: "space-between", marginTop: "10px" }}
-          >
+          <br />
+          <br />
+          {currentUser?.uid === event.hostUid && (
             <Button
+              floated="left"
               style={{ backgroundColor: "#1f4ed3", color: "white" }}
               content="Delete event"
               onClick={() =>
@@ -90,14 +96,16 @@ export default function EventListItem({ event }: Props) {
                 )
               }
             />
+          )}
 
-            <Button
-              color="purple"
-              content="View"
-              as={Link}
-              to={`/events/${event.id}`}
-            />
-          </div>
+          <Button
+            style={{ float: `right` }}
+            color="purple"
+            content="View"
+            floated="right"
+            as={Link}
+            to={`/events/${event.id}`}
+          />
         </Segment>
       </SegmentGroup>
     </>

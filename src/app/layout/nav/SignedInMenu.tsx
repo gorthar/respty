@@ -41,7 +41,7 @@ export default function SignedInMenu() {
           src={currentUser?.photoURL || "/user.png"}
         />
         <Dropdown pointing="top left" text={currentUser?.displayName ?? "User"}>
-          <Dropdown.Menu>
+          <Dropdown.Menu className="zIndex">
             <Dropdown.Item
               as={Link}
               to="/createEvent"
