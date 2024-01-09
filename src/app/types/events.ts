@@ -19,3 +19,13 @@ export type Attendee = {
     displayName : string;
     photoURL : string;
 }
+
+export type ChatComment = {
+    id : string;
+    displayName : string;
+    photoURL : string;
+    uid : string;
+    text : string;
+    date : string;
+}
+

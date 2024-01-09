@@ -89,9 +89,18 @@ export default function EventForm() {
 
   function cancelEvent() {
     if (event?.isCanceled) {
-      updateDocument(event.id, { ...event, isCanceled: false });
+      updateDocument(event.id, {
+        ...event,
+        isCanceled: false,
+        date: Timestamp.fromDate(new Date(event.date)),
+      });
     } else {
-      event && updateDocument(event.id, { ...event, isCanceled: true });
+      event &&
+        updateDocument(event.id, {
+          ...event,
+          isCanceled: true,
+          date: Timestamp.fromDate(new Date(event.date)),
+        });
     }
     toast.success(
       `Event status changed to  ${event?.isCanceled ? "active" : "cancelled"}`

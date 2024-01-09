@@ -6,6 +6,8 @@ import 'firebase/auth';
 import { getAuth } from "firebase/auth";
 import 'firebase/storage';
 import { getStorage } from "firebase/storage";
+import 'firebase/database';
+import { getDatabase } from "firebase/database";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -13,6 +15,7 @@ import { getStorage } from "firebase/storage";
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: "revently-myreven.firebaseapp.com",
+  databaseURL: "https://revently-myreven-default-rtdb.firebaseio.com",
   projectId: "revently-myreven",
   storageBucket: "revently-myreven.appspot.com",
   messagingSenderId: "448262807039",
@@ -24,3 +27,4 @@ const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 export const storage = getStorage(app);
+export const fb = getDatabase(app);

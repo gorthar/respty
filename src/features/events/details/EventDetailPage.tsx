@@ -12,16 +12,18 @@ import { useFireStore } from "../../../app/hooks/firestore/useFirestore";
 
 export default function EventDetailPage() {
   const { id } = useParams();
-  const {loadDocument} = useFireStore('events')
-  const event = useAppSelector((state) => state.eventsConfig.data.find((e) => e.id === id));
-  const {status} = useAppSelector(state => state.eventsConfig)
+  const { loadDocument } = useFireStore("events");
+  const event = useAppSelector((state) =>
+    state.eventsConfig.data.find((e) => e.id === id)
+  );
+  const { status } = useAppSelector((state) => state.eventsConfig);
 
   useEffect(() => {
     if (!id) return;
-    loadDocument(id,actions)
-    },[id,loadDocument]);
+    loadDocument(id, actions);
+  }, [id, loadDocument]);
 
-  if (status==='loading') return <LoadingComponent />;
+  if (status === "loading") return <LoadingComponent />;
   if (!event) return <h1>Event not found</h1>;
 
   return (
@@ -30,7 +32,7 @@ export default function EventDetailPage() {
         <Grid.Column computer={10} mobile={16}>
           <EventDetailHeader event={event} />
           <EventDetailInfo event={event} />
-          <EventDetailChat />
+          <EventDetailChat event={event} />
         </Grid.Column>
         <Grid.Column width={6} only="computer">
           <EventDetailSideBar event={event} />
