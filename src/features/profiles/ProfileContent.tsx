@@ -3,6 +3,7 @@ import ProfileAbout from "./ProfileAbout";
 import { Profile } from "../../app/types/profile";
 import ProfilePhotos from "./ProfilePhotos";
 import ProfileEvents from "./ProfileEvents";
+import ProfileConnections from "./ProfileConnections";
 
 type Props = {
   profile: Profile;
@@ -15,11 +16,23 @@ export default function ProfileContent({ profile }: Props) {
     { menuItem: "Events", render: () => <ProfileEvents profile={profile} /> },
     {
       menuItem: "Followers",
-      render: () => <Tab.Pane>Followers content</Tab.Pane>,
+      render: () => (
+        <ProfileConnections
+          key={"Followers"}
+          profile={profile}
+          following={false}
+        />
+      ),
     },
     {
       menuItem: "Following",
-      render: () => <Tab.Pane>Following content</Tab.Pane>,
+      render: () => (
+        <ProfileConnections
+          key={"Following"}
+          profile={profile}
+          following={true}
+        />
+      ),
     },
   ];
   return (

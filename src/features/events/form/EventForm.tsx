@@ -44,6 +44,10 @@ export default function EventForm() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!currentUser) {
+      toast.error("You need to be logged in to do that");
+      navigate("/");
+    }
     if (!eventId) return;
     loadDocument(eventId, actions);
   }, [eventId, loadDocument]);

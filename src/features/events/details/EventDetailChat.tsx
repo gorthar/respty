@@ -3,7 +3,7 @@ import ChatForm from "./ChatForm";
 import { AppEvent, ChatComment } from "../../../app/types/events";
 import { useEffect, useState } from "react";
 import { onChildAdded, ref } from "firebase/database";
-import { fb } from "../../../app/config/firebase";
+import { auth, fb } from "../../../app/config/firebase";
 import { formatDistance } from "date-fns";
 
 type Props = { event: AppEvent };
@@ -21,7 +21,6 @@ export default function EventDetailChat({ event }: Props) {
       unsubscribe();
     };
   }, [event.id]);
-
   return (
     <>
       <Segment
@@ -49,7 +48,7 @@ export default function EventDetailChat({ event }: Props) {
             </Comment>
           ))}
         </Comment.Group>
-        <ChatForm eventId={event.id} />
+        {auth.currentUser && <ChatForm eventId={event.id} />}
       </Segment>
     </>
   );

@@ -4,6 +4,8 @@ export type Profile = {
     photoURL: string;
     createdAt: string;
     description: string;
+    followerCount?: number;
+    followingCount?: number;
 
 };
 export type Photo = {
@@ -12,3 +14,9 @@ export type Photo = {
     url: string;
     
 };
+
+export type Follow = {
+    id : string;
+    displayName: string;
+    photoURL: string;
+}

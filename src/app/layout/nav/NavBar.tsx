@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import SignedOutBotton from "./SignedOutBotton";
 import SignedInMenu from "./SignedInMenu";
 import { useAppSelector } from "../../store/store";
+import { auth } from "../../config/firebase";
 
 export default function NavBar() {
   const { authanticated } = useAppSelector((state) => state.auth);
@@ -17,13 +18,15 @@ export default function NavBar() {
         <Menu.Item name="Events" as={NavLink} to="/events" />
         <Menu.Item name="Scratch" as={NavLink} to="/scratch" />
         <Menu.Item>
-          <Button
-            as={NavLink}
-            to="/createEvent"
-            floated="right"
-            content="Create event"
-            color="purple"
-          ></Button>
+          {auth.currentUser && (
+            <Button
+              as={NavLink}
+              to="/createEvent"
+              floated="right"
+              content="Create event"
+              color="purple"
+            ></Button>
+          )}
         </Menu.Item>
 
         {authanticated ? <SignedInMenu /> : <SignedOutBotton />}

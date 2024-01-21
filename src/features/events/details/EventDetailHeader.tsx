@@ -95,7 +95,7 @@ export default function EventDetailHeader({ event }: Props) {
       </Segment>
 
       <Segment attached="bottom">
-        {!isCurrentUserAttendig && !event.isCanceled && (
+        {currentUser && !isCurrentUserAttendig && !event.isCanceled && (
           <Button
             color="purple"
             style={{ fontSize: "0.9rem" }}
