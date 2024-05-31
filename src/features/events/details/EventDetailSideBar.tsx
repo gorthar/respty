@@ -1,12 +1,14 @@
 import { Segment, Item } from "semantic-ui-react";
 import { AppEvent } from "../../../app/types/events";
 import { Link } from "react-router-dom";
+import { useAppSelector } from "../../../app/store/store";
 
 type Props = {
   event: AppEvent;
 };
 
 export default function EventDetailSideBar({ event }: Props) {
+  const { authanticated } = useAppSelector((state) => state.auth);
   if (!event.attendees) {
     return (
       <Segment
@@ -45,9 +47,16 @@ export default function EventDetailSideBar({ event }: Props) {
             >
               <Item.Image size="tiny" src={attendee.photoURL || "/user.png"} />
               <Item.Content verticalAlign="middle">
-                <Item.Header as={Link} to={`/profiles/${attendee.id}`}>
-                  <span>{attendee.displayName}</span>
-                </Item.Header>
+                {authanticated && (
+                  <Item.Header as={Link} to={`/profiles/${attendee.id}`}>
+                    <span>{attendee.displayName}</span>
+                  </Item.Header>
+                )}
+                {!authanticated && (
+                  <Item.Header>
+                    <span>{attendee.displayName}</span>
+                  </Item.Header>
+                )}
               </Item.Content>
             </Item>
           ))}

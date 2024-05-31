@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { actions } from "./followSlice";
 import { useAppSelector } from "../../app/store/store";
 import { Link } from "react-router-dom";
-import ProfileConnectionsPlaceholder from "./profileConnectionsPlaceholder";
+import ProfileConnectionsPlaceholder from "./ProfileConnectionsPlaceholder";
 
 type Props = {
   profile: Profile;
